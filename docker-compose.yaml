@@ -1,0 +1,73 @@
+services:
+  edhrec-analyzer:
+    image: ghcr.io/spicyfajitas/edhrec-deck-analyzer:latest
+    container_name: edhrec-analyzer
+    ports:
+      - "8501:8501"
+      - "8502:8502"   # Prometheus metrics
+    volumes:
+      - ./cache:/app/cache
+      - ./output:/app/output
+    restart: unless-stopped
+
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOCKER_API_VERSION=1.44
+    command: --cleanup --interval 3600
+
+#   alloy:
+#     image: grafana/alloy:latest
+#     container_name: alloy
+#     restart: unless-stopped
+#     volumes:
+#       - ./monitoring/alloy/config.alloy:/etc/alloy/config.alloy
+#       - /var/run/docker.sock:/var/run/docker.sock:ro
+#     command: ["run", "/etc/alloy/config.alloy"]
+#     depends_on:
+#       - edhrec-analyzer
+#       - mimir
+#       - loki
+
+#   mimir:
+#     image: grafana/mimir:latest
+#     container_name: mimir
+#     restart: unless-stopped
+#     volumes:
+#       - ./monitoring/mimir/mimir-config.yaml:/etc/mimir/mimir-config.yaml
+#       - mimir-data:/data
+#     command: ["-config.file=/etc/mimir/mimir-config.yaml"]
+
+#   loki:
+#     image: grafana/loki:latest
+#     container_name: loki
+#     restart: unless-stopped
+#     volumes:
+#       - ./monitoring/loki/loki-config.yaml:/etc/loki/loki-config.yaml
+#       - loki-data:/loki
+#     command: ["-config.file=/etc/loki/loki-config.yaml"]
+
+#   grafana:
+#     image: grafana/grafana:latest
+#     container_name: grafana
+#     restart: unless-stopped
+#     ports:
+#       - "3000:3000"
+#     volumes:
+#       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+#       - grafana-data:/var/lib/grafana
+#     environment:
+#       - GF_AUTH_ANONYMOUS_ENABLED=true
+#       - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+#     depends_on:
+#       - mimir
+#       - loki
+
+# volumes:
+#   mimir-data:
+#   loki-data:
+#   grafana-data:

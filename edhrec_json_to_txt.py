@@ -7,7 +7,7 @@ import random
 import math
 
 def format_commander_name(commander_name:str):
-    non_alphas_regex = "[^\w\s]" # Everything that's not alphanumeric or space
+    non_alphas_regex = r"[^\w\s]" # Everything that's not alphanumeric or space
     formatted_name = re.sub(non_alphas_regex, "", commander_name)
     formatted_name = formatted_name.lower() # Make lowercase
     formatted_name = formatted_name.replace(" ", "-")  # Replace spaces with hyphens
@@ -164,11 +164,15 @@ def main():
     root = Tk()
     root.attributes("-topmost", True)
     root.iconify() # Hide window
-    print(f"\nType commander name. Make sure spelling and spaces are correct. Capitalization and symbols don't matter")
-    commander_name = input("Commander name:")
+    with open('commander.txt', 'r') as file:
+        commander_name = file.read()
+        file.close()
+    formatted_name = format_commander_name(commander_name)
     json_data = request_json(commander_name)
     cardlists = get_cardlists(json_data)
-    output_directory = browse_output_directory("Select cardlist output directory")
+    output_directory = "./output/" + formatted_name + "/edhrec-suggestions"
+    if not os.path.isdir(output_directory):
+        os.makedirs(output_directory)
     save_dict_of_lists(cardlists, output_directory)
     cardlist_info = get_cardlist_info(cardlists)
     save_info(cardlist_info, output_directory)

@@ -1,0 +1,6 @@
+streamlit
+altair
+pandas
+requests
+tqdm
+prometheus-client

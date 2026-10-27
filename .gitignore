@@ -1,3 +1,14 @@
 build/
 
+__pycache__/*
+
 *.spec
+
+output
+
+venv*
+
+# caches
+scryfall_cache.json
+deck_cache
+commander.txt
